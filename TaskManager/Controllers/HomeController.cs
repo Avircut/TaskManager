@@ -13,10 +13,10 @@ namespace TaskManager.Controllers
     {
         private readonly TaskDbContext _db;
         private readonly ITasks _tasks;
-        public HomeController()
+        public HomeController(ITasks tasks, TaskDbContext db)
         {
-            //_tasks = tasks;
-            //_db = db;
+            _tasks = tasks;
+            _db = db;
         }
         public IActionResult Index()
         {

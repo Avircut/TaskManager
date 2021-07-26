@@ -8,6 +8,8 @@ namespace TaskManager.ViewModels
 {
     public class HomeIndexViewModel
     {
-        public IEnumerable<Tasks> GetTasks { get; set; }
+        public IEnumerable<Tasks> GetMajorTasks { get; set; }
+        public IEnumerable<Tasks> GetSubtasks { get; set; }
+        public Tasks GetTaskInfo { get; set; }
     }
 }

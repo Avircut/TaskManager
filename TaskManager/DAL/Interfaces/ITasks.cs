@@ -8,6 +8,8 @@ namespace TaskManager.DAL.Interfaces
 {
     public interface ITasks
     {
-        IEnumerable<Tasks> GetTasks();
+        IEnumerable<Tasks> GetMajorTasks();
+        Tasks GetTaskInfo(int taskID);
+        IEnumerable<Tasks> GetSubtasks(int taskID);
     }
 }

@@ -15,10 +15,8 @@ namespace TaskManager.DAL.Repository
         {
             db = _db;
         }
-        public IEnumerable<Tasks> GetTasks()
-        {
-            List<Tasks> tasksList = new List<Tasks>();
-            return tasksList;
-        }
+        public IEnumerable<Tasks> GetMajorTasks() => _db.Tasks.ToList();
+        public IEnumerable<Tasks> GetSubtasks(int taskID) => _db.Tasks.Where(p => p.ParentTaskID == taskID).ToList();
+        public Tasks GetTaskInfo(int taskID) => _db.Tasks.FirstOrDefault(p => p.TaskID == taskID);
     }
 }
