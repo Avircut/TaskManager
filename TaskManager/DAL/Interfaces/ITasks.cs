@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TaskManager.Data.Models;
+using TaskManager.DAL.Models;
 
-namespace TaskManager.Data.Interfaces
+namespace TaskManager.DAL.Interfaces
 {
-    interface ITasks
+    public interface ITasks
     {
         IEnumerable<Tasks> GetTasks();
     }
