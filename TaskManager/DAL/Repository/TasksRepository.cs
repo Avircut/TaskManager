@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,10 +14,11 @@ namespace TaskManager.DAL.Repository
         private readonly TaskDbContext _db;
         public TasksRepository(TaskDbContext db)
         {
-            db = _db;
+            _db = db;
         }
-        public IEnumerable<Tasks> GetMajorTasks() => _db.Tasks.ToList();
+        public IEnumerable<Tasks> GetMajorTasks() => _db.Tasks.Where(p=>p.ParentTaskID==0).ToList();
         public IEnumerable<Tasks> GetSubtasks(int taskID) => _db.Tasks.Where(p => p.ParentTaskID == taskID).ToList();
         public Tasks GetTaskInfo(int taskID) => _db.Tasks.FirstOrDefault(p => p.TaskID == taskID);
+        public IEnumerable<Tasks> GetNotCompletedTasks() => _db.Tasks.Where(p => p.Status!="Выполнено").ToList();
     }
 }

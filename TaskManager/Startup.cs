@@ -25,8 +25,8 @@ namespace TaskManager
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<TaskDbContext>(options => options.UseSqlServer(_confString.GetConnectionString("DefaultConnection")));
-            //services.AddTransient<ITasks, TasksRepository>();
+            services.AddDbContext<TaskDbContext>(options => options.UseSqlServer(_confString.GetConnectionString("DefaultConnection")));
+            services.AddTransient<ITasks, TasksRepository>();
             services.AddMvc();
         }
 

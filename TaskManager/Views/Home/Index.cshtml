@@ -3,40 +3,26 @@
         <span class="fs-5 fw-semibold">Задачи</span>
     </a>
     <div class="list-group list-group-flush border-bottom scrollarea">
-        <a href="#" class="list-group-item list-group-item-action active py-3 lh-tight" aria-current="true">
-            <div class="d-flex w-100 align-items-center justify-content-between">
-                <strong class="mb-1">List group item heading</strong>
-                <small>Wed</small>
-            </div>
-            <div class="col-10 mb-1 small">Some placeholder content in a paragraph below the heading and date.</div>
-        </a>
-        <a href="#" class="list-group-item list-group-item-action py-3 lh-tight">
-            <div class="d-flex w-100 align-items-center justify-content-between">
-                <strong class="mb-1">List group item heading</strong>
-                <small class="text-muted">Tues</small>
-            </div>
-            <div class="col-10 mb-1 small">Some placeholder content in a paragraph below the heading and date.</div>
-        </a>
-        <a href="#" class="list-group-item list-group-item-action py-3 lh-tight">
-            <div class="d-flex w-100 align-items-center justify-content-between">
-                <strong class="mb-1">List group item heading</strong>
-                <small class="text-muted">Mon</small>
-            </div>
-            <div class="col-10 mb-1 small">Some placeholder content in a paragraph below the heading and date.</div>
-        </a>
     </div>
 </div>
 <div class="b-divider"></div>
 <div class="container">
     <div class="caption-top fs-5 fw-semibold" >
-        <h4>Название задачи</h4>
+        <h4></h4>
     </div>
     <div class="description">
-        <p>Some placeholder content in a paragraph below the heading and date</p>
+        <label class="text-muted">Описание:</label>
+        <p></p>
     </div>
-    <div class="executors"><p class="text-muted">Исполнители: Вася Пупкин, Вячеслав Питухов, Георгий Литвинов</p></div>
-    <div class="time"><small class="text-muted"></small></div>
-    <div class="status"><p class="statustext">Выполнено</p></div>
+    <div class="executors">
+        <label class="text-muted">Исполнители:</label>
+        <p></p></div>
+    <div class="time">
+        <label class="text-muted">Период выполнения (фактическое время):</label>
+        <p></p></div>
+    <div class="status">
+        <label class="text-muted">Статус:</label>
+        <p class="statustext"></p></div>
 </div>
 <div class="controls">
     <div title="Удалить" class="btn delete-btn"><img width="45px" height="45px" src="/img/delete.svg"></div>
@@ -80,6 +66,14 @@
                 <div class="col-12">
                     <label for="parentID" class="form-label">Родительская задача<span class="text-muted"> (Опционально)</span></label>
                     <select id="parentID" class="form-control">
+                        <option></option>
+                        @{
+                            foreach(var task in Model.GetNotCompletedTasks)
+                            {
+                                <option value="@task.TaskID">@task.Name</option>
+                            }
+                        
+                        }
                     </select>
                     <div class="invalid-feedback">
                         Пожалуйста, введите исполнителей задачи.
@@ -95,7 +89,7 @@
 <div class="confirmation">
     <p>Вы уверены, что хотите удалить задачу и все (5) подзадачи?</p>
     <div class="btn-group">
-    <button class="btn btn-outline-secondary" type="reset">Да</button>
+    <button id="confirm" class="btn btn-outline-secondary" type="button">Да</button>
     <button class="btn btn-outline-secondary" type="reset">Нет</button>
     </div>
 </div>

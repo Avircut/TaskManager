@@ -11,5 +11,6 @@ namespace TaskManager.DAL.Interfaces
         IEnumerable<Tasks> GetMajorTasks();
         Tasks GetTaskInfo(int taskID);
         IEnumerable<Tasks> GetSubtasks(int taskID);
+        IEnumerable<Tasks> GetNotCompletedTasks();
     }
 }
