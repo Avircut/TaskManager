@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskManager.DAL.EF
 {
-    public class AppDbContextFactory : IDesignTimeDbContextFactory<TaskDbContext>
+    public class TaskDbContextFactory : IDesignTimeDbContextFactory<TaskDbContext> //EF Core didn't create my DbContext by himself, so i declared a DbContextFactory
     {
         public TaskDbContext CreateDbContext(string[] args)
         {

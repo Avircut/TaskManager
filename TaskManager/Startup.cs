@@ -40,7 +40,6 @@ namespace TaskManager
             }
             else
             {
-                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
             var supportedCultures = new[]

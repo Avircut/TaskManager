@@ -13,7 +13,7 @@ namespace TaskManager.DAL.EF
 
         public DbSet<Tasks> Tasks { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder) //Database Initializer
         {
             modelBuilder.Entity<Tasks>()
                 .HasKey(t => t.TaskID);

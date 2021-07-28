@@ -14,41 +14,41 @@ using TaskManager.ViewModels;
 
 namespace TaskManager.Controllers
 {
-    public class ReceivingStatus
+    public class ReceivingStatus // Class for Valid Receiving Data to Change Status
     {
         public int TaskID { get; set; }
         public string Status { get; set; }
     }
 
-    public class ReceivingData
+    public class ReceivingData // Class for Valid Receiving Data for any other Queries
     {
-        public int TaskID { get; set; }
+        public int TaskID { get; set; } 
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } 
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } 
         [Required]
         public string Executors { get; set; }
         [Required]
-        public DateTime PlannedEndDate{ get; set; }
-        public int ParentTaskID { get; set; }
+        public DateTime PlannedEndDate{ get; set; } // The Date when work planned to be ended
+        public int ParentTaskID { get; set; } // (Optional) The ID of the Task of which this task is a part
     }
     public class HomeController : Controller
     {
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IStringLocalizer<HomeController> _localizer;
-        private TaskDbContext _db;
-        private readonly ITasks _tasks;
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType); //The logger, which log all info about exceptions
+        private readonly IStringLocalizer<HomeController> _localizer; //Takes data from resources to localize
+        private TaskDbContext _db; //Context of our Database
+        private readonly ITasks _tasks; //Interface, linked with repos of our model
         public HomeController(ITasks tasks, TaskDbContext db, IStringLocalizer<HomeController> localizer)
         {
             _localizer = localizer;
             _tasks = tasks;
             _db = db;
         }
-        [HttpGet]
-        public IEnumerable<Tasks> GetMajorTasks() => _tasks.GetMajorTasks();
-        public IEnumerable<Tasks> GetNotCompletedTasks() => _tasks.GetNotCompletedTasks();
-        public IActionResult Index()
+        [HttpGet] // Секция для обработки GET Запросов
+        public IEnumerable<Tasks> GetMajorTasks() => _tasks.GetMajorTasks(); //Receiving Major Tasks (the tasks which aren't child for any other tasks)
+        public IEnumerable<Tasks> GetNotCompletedTasks() => _tasks.GetNotCompletedTasks(); // Take all not completed Tasks for our select (to create new task)
+        public IActionResult Index() // Building a view with localization
         {
             ViewData["Title"] = _localizer["App.Title"];
             ViewData["Confirmation.No"] = _localizer["Confirmation.No"];
@@ -85,13 +85,13 @@ namespace TaskManager.Controllers
             HomeIndexViewModel obj = new HomeIndexViewModel();
             obj.GetNotCompletedTasks = _tasks.GetNotCompletedTasks();
             return View(obj);
-        }
-        [HttpPost]
-        public Tasks GetTaskInfo([FromBody] int taskID) => _tasks.GetTaskInfo(taskID);
+        } 
+        [HttpPost] // Section of POST Processing Methods
+        public Tasks GetTaskInfo([FromBody] int taskID) => _tasks.GetTaskInfo(taskID); // Get All Info about selected Task
 
-        public IEnumerable<Tasks> GetSubtasks([FromBody] int taskID) => _tasks.GetSubtasks(taskID);
+        public IEnumerable<Tasks> GetSubtasks([FromBody] int taskID) => _tasks.GetSubtasks(taskID); // Get All Subtasks of current task
 
-        public void AddTask([FromBody] ReceivingData data)
+        public void AddTask([FromBody] ReceivingData data) //Adding a task
         {
             _db.Database.EnsureCreated();
             Tasks task = new Tasks { 
@@ -106,7 +106,7 @@ namespace TaskManager.Controllers
             _db.SaveChanges();
 
         }
-        public void EditTask([FromBody] ReceivingData data)
+        public void EditTask([FromBody] ReceivingData data) //Editing a task
         {
             Tasks task = _db.Tasks.Where(p => p.TaskID == data.TaskID).FirstOrDefault();
             task.Name = data.Name;
@@ -116,19 +116,19 @@ namespace TaskManager.Controllers
             _db.SaveChanges();
 
         }
-        public void DeleteTask([FromBody] int taskID)
+        public void DeleteTask([FromBody] int taskID) // Deleting a task
         {
             IEnumerable<Tasks> tasks = _db.Tasks.Where(p => p.TaskID == taskID || p.ParentTaskID==taskID).ToList();
             foreach (var task in tasks) _db.Tasks.Remove(task);
             _db.SaveChanges();
         }
-        public void ChangeStatus([FromBody] ReceivingStatus data)
+        public void ChangeStatus([FromBody] ReceivingStatus data) //Change status with buttons
         {
             Tasks task = _db.Tasks.Where(p => p.TaskID == data.TaskID).FirstOrDefault();
             task.Status = data.Status;
             _db.SaveChanges();
         }
-        protected void OnException(ExceptionContext filterContext)
+        protected void OnException(ExceptionContext filterContext) //Logging an exception
         {
             logger.Error(filterContext.Exception);
             filterContext.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
