@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System;
@@ -34,6 +35,7 @@ namespace TaskManager.Controllers
     }
     public class HomeController : Controller
     {
+        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IStringLocalizer<HomeController> _localizer;
         private TaskDbContext _db;
         private readonly ITasks _tasks;
@@ -125,6 +127,12 @@ namespace TaskManager.Controllers
             Tasks task = _db.Tasks.Where(p => p.TaskID == data.TaskID).FirstOrDefault();
             task.Status = data.Status;
             _db.SaveChanges();
+        }
+        protected void OnException(ExceptionContext filterContext)
+        {
+            logger.Error(filterContext.Exception);
+            filterContext.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.InternalServerError;
+            filterContext.ExceptionHandled = true;
         }
     }
 }
