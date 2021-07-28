@@ -13,6 +13,12 @@ using TaskManager.ViewModels;
 
 namespace TaskManager.Controllers
 {
+    public class ReceivingStatus
+    {
+        public int TaskID { get; set; }
+        public string Status { get; set; }
+    }
+
     public class ReceivingData
     {
         public int TaskID { get; set; }
@@ -69,6 +75,10 @@ namespace TaskManager.Controllers
             ViewData["TaskInfo.Executors"] = _localizer["TaskInfo.Executors"];
             ViewData["TaskInfo.Status"] = _localizer["TaskInfo.Status"];
             ViewData["TaskInfo.Time"] = _localizer["TaskInfo.Time"];
+            ViewData["TaskInfo.Button.Left"] = _localizer["TaskInfo.Button.Left"];
+            ViewData["TaskInfo.Button.Left.Title"] = _localizer["TaskInfo.Button.Left.Title"];
+            ViewData["TaskInfo.Button.Right"] = _localizer["TaskInfo.Button.Right"];
+            ViewData["TaskInfo.Button.Right.Title"] = _localizer["TaskInfo.Button.Right.Title"];
             @ViewData["Form.Button.Edit"] = _localizer["Form.Button.Edit"];
             HomeIndexViewModel obj = new HomeIndexViewModel();
             obj.GetNotCompletedTasks = _tasks.GetNotCompletedTasks();
@@ -108,6 +118,12 @@ namespace TaskManager.Controllers
         {
             IEnumerable<Tasks> tasks = _db.Tasks.Where(p => p.TaskID == taskID || p.ParentTaskID==taskID).ToList();
             foreach (var task in tasks) _db.Tasks.Remove(task);
+            _db.SaveChanges();
+        }
+        public void ChangeStatus([FromBody] ReceivingStatus data)
+        {
+            Tasks task = _db.Tasks.Where(p => p.TaskID == data.TaskID).FirstOrDefault();
+            task.Status = data.Status;
             _db.SaveChanges();
         }
     }

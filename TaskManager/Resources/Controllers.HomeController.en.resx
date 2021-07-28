@@ -189,6 +189,18 @@
   <data name="Sidebar.Title" xml:space="preserve">
     <value>Tasks</value>
   </data>
+  <data name="TaskInfo.Button.Left" xml:space="preserve">
+    <value>&lt;&lt;</value>
+  </data>
+  <data name="TaskInfo.Button.Left.Title" xml:space="preserve">
+    <value>Decrease Status (Appointed &lt;- Paused &lt;- In work &lt;- Completed)</value>
+  </data>
+  <data name="TaskInfo.Button.Right" xml:space="preserve">
+    <value>&gt;&gt;</value>
+  </data>
+  <data name="TaskInfo.Button.Right.Title" xml:space="preserve">
+    <value>Increase Status (Appointed -&gt; Paused -&gt; In work -&gt; Completed)</value>
+  </data>
   <data name="TaskInfo.Description" xml:space="preserve">
     <value>Description</value>
   </data>

@@ -189,6 +189,18 @@
   <data name="Sidebar.Title" xml:space="preserve">
     <value>Задачи</value>
   </data>
+  <data name="TaskInfo.Button.Left" xml:space="preserve">
+    <value>&lt;&lt;</value>
+  </data>
+  <data name="TaskInfo.Button.Left.Title" xml:space="preserve">
+    <value>Понизить статус задачи (Назначена &lt;- Приостановлена &lt;- Выполняется &lt;- Выполнена)</value>
+  </data>
+  <data name="TaskInfo.Button.Right" xml:space="preserve">
+    <value>&gt;&gt;</value>
+  </data>
+  <data name="TaskInfo.Button.Right.Title" xml:space="preserve">
+    <value>Повысить статус задачи (Назначена -&gt; Приостановлена -&gt; Выполняется -&gt; Выполнена)</value>
+  </data>
   <data name="TaskInfo.Description" xml:space="preserve">
     <value>Описание</value>
   </data>

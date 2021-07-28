@@ -316,5 +316,49 @@ function deleteTask(getMajorTasks) {
         console.log("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
     })
 }
-
+$(".container .btn-group").children().eq(0).on("click", function () {
+    decreaseStatus()
+})
+$(".container .btn-group").children().eq(1).on("click", function () {
+    increaseStatus()
+})
+function changeStatus(status) {
+    var taskID = $(".active").attr("href")
+    taskID = taskID.replace("?id=", "")
+    data = {
+        TaskID: taskID,
+        Status: status
+    }
+    $.ajax({
+        type: "POST",
+        url: "/Home/ChangeStatus",
+        data: JSON.stringify(data),
+        contentType: "application/json charset=utf-8",
+        beforeSend: showLoader(),
+        complete: hideLoader()
+    }).done(function (data, textStatus, jqXHR) {
+        console.log("Status Saved")
+        getTaskInfo(displayTaskInfo)
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
+    })
+}
+function increaseStatus() {
+    var currentStatus = $(".statustext").text()
+    switch (currentStatus) {
+        case "Назначена": { changeStatus("Выполняется"); break;}
+        case "Приостановлена": { changeStatus("Выполняется"); break;}
+        case "Выполняется": { changeStatus("Выполнена"); break;}
+        case "Выполнена": { break;}
+    }
+}
+function decreaseStatus() {
+    var currentStatus = $(".statustext").text()
+    switch (currentStatus) {
+        case "Назначена": { break; }
+        case "Приостановлена": { break; }
+        case "Выполняется": { changeStatus("Приостановлена"); break; }
+        case "Выполнена": { changeStatus("Выполняется"); break; }
+    }
+}
 

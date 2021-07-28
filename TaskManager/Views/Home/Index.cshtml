@@ -24,6 +24,10 @@
     <div class="status">
         <label class="text-muted">@ViewData["TaskInfo.Status"]:</label>
         <p class="statustext"></p></div>
+        <div class="btn-group">
+            <button title="@ViewData["TaskInfo.Button.Left.Title"]" class="btn btn-outline-secondary" type="button">@ViewData["TaskInfo.Button.Left"]</button>
+            <button title="@ViewData["TaskInfo.Button.Right.Title"]" class="btn btn-outline-secondary" type="button">@ViewData["TaskInfo.Button.Right"]</button>
+        </div>
 </div>
 <div class="controls">
     <div title="@ViewData["Controls.Tip.Delete"]" class="btn delete-btn"><img width="45px" height="45px" src="/img/delete.svg"></div>
