@@ -1,6 +1,7 @@
 ﻿//Right-bottom side Controls
 
 var mode = "Create"
+var isHasSubtasks = false;
 $(".add-btn").on("click", function () {
     $(".add").css("display", "flex")
     enableCover()
@@ -118,23 +119,24 @@ function getTaskInfo(displayTaskInfo) {
 //Getting All current selected task's subtasks info
 
 function getSubtasks(displaySubtasks) {
-    if (!$(".active").next().is(".subgroup-l1") && !$(".active.subgroup-l1").next().is(".subgroup-l2") && !$(".active.subgroup-l2").next().is(".subgroup-l3")) {
-        var taskID = $(".active").attr("href")
-        taskID = taskID.replace("?id=", "")
-        $.ajax({
-            type: "POST",
-            url: "/Home/GetSubtasks",
-            data: JSON.stringify(taskID),
-            contentType: "application/json charset=utf-8",
-            dataType: "json",
-            beforeSend: showLoader(),
-            success: displaySubtasks,
-            complete: hideLoader(),
-            failure: function (jqXHR, textsStatus, errorThrown) {
-                alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
-            }
-        })
-    }
+    var taskID = $(".active").attr("href")
+    taskID = taskID.replace("?id=", "")
+    $.ajax({
+        type: "POST",
+        url: "/Home/GetSubtasks",
+        data: JSON.stringify(taskID),
+        contentType: "application/json charset=utf-8",
+        async:"true",
+        beforeSend: showLoader(),
+        complete: hideLoader(),
+        failure: function (jqXHR, textsStatus, errorThrown) {
+            alert("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
+        }
+    }).done(function (data, textStatus, jqXHR) {
+        return displaySubtasks(data)
+    }).fail(function () {
+        console.log("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
+    })
 }
 function displayMajorTasks(response) {
     $.each(response, function (index, task) {
@@ -150,25 +152,76 @@ function displayMajorTasks(response) {
 
 }
 function displayTaskInfo(response) {
+    var registerDate = moment(cutDate(response.registerDate), "DD.MM.YYYY")
+    var plannedEndDate = moment(cutDate(response.plannedEndDate), "DD.MM.YYYY")
+    var factEndDate = moment(cutDate(response.factEndDate), "DD.MM.YYYY")
+    var labor=0
+    var laborFact = 0
+    if (!getSubtasks(hasSubtasks)) {
+        labor = moment.duration(plannedEndDate.diff(registerDate)).asHours();
+        laborFact = moment.duration(factEndDate.diff(registerDate)).asHours();
+    }
     $(".caption-top h4").text(response.name)
     $(".description p").text(response.description)
     $(".executors p").text(response.executors)
-    $(".time p").text(`${cutDate(response.registerDate)} - ${cutDate(response.plannedEndDate)}`)
+    $(".time p").eq(0).text(`${cutDate(response.registerDate)} - ${cutDate(response.plannedEndDate)}`)
+    $(".time p").eq(1).text(`${labor} ч.`)
+    if (laborFact > 0) $(".time").eq(2).text +=`(${laborFact} ч.)`
     if (response.factEndDate != "0001-01-01T00:00:00") $(".time p").text += "(" + cutDate(response.factEndDate) + ")"
     $(".status p").text(response.status)
     getSubtasks(displaySubtasks)
+
+}
+function hasSubtasks(response) {
+    if (jQuery.isEmptyObject(response)) {
+        console.log("This task has no subtasks")
+        return false
+    }
+    else {
+        console.log("This task has subtasks")
+        console.log(response)
+        labor = getSubtasks(calcLabor)
+        laborFact = getSubtasks(calcLaborFact)
+        return true
+    }
+}
+function calcLabor(response) {
+    var labor = 0
+    var registerDate
+    var plannedEndDate
+    $.each(response, function (index, subtask) {
+        registerDate = moment(cutDate(subtask.registerDate), "DD.MM.YYYY")
+        plannedEndDate = moment(cutDate(subtask.plannedEndDate), "DD.MM.YYYY")
+        labor += moment.duration(plannedEndDate.diff(registerDate)).asHours()
+    })
+    $(".time p").eq(1).text(`${labor} ч.`)
+    return labor;
+}
+function calcLaborFact(response) {
+    var laborFact = 0
+    var registerDate
+    var factEndDate
+    $.each(response, function (index, subtask) {
+        registerDate = moment(cutDate(subtask.registerDate), "DD.MM.YYYY")
+        factEndDate = moment(cutDate(subtask.factEndDate), "DD.MM.YYYY")
+        laborFact += moment.duration(factEndDate.diff(registerDate)).asHours()
+    })
+    if (laborFact > 0) $(".time").eq(2).text += `(${laborFact} ч.)`
+    return laborFact;
 }
 function displaySubtasks(response) {
-    response.reverse()
-    $.each(response, function (index, task) {
-        $(".list-group .active").after(`<a href="?id=${task.taskID}" class="list-group-item ${nextSubGroupLevelCheck()} list-group-item-action py-3 lh-tight">
+    if (!$(".active").next().is(".subgroup-l1") && !$(".active.subgroup-l1").next().is(".subgroup-l2") && !$(".active.subgroup-l2").next().is(".subgroup-l3")) {
+        response.reverse()
+        $.each(response, function (index, task) {
+            $(".list-group .active").after(`<a href="?id=${task.taskID}" class="list-group-item ${nextSubGroupLevelCheck()} list-group-item-action py-3 lh-tight">
                     <div class= "d-flex w-100 align-items-center justify-content-between">
                 <strong class="mb-1">${task.name}</strong>
                 <small>${cutDate(task.plannedEndDate)}</small>
             </div>
                     <div class="col-10 mb-1 small">${task.description}</div>
         </a>`)
-    })
+        })
+    }
 }
 //Garbage function that would be better to change later... Check what class do we need to provide to our subtasks group
 
@@ -180,8 +233,8 @@ function nextSubGroupLevelCheck() {
 
 $(".needs-validation").submit(function (event) {
     event.preventDefault()
-    if (mode == "Create") add(getMajorTasks)
-    else edit(getMajorTasks)
+    if (mode == "Create") addTask(getMajorTasks)
+    else editTask(getMajorTasks)
 })
 
 function editTask(getMajorTasks) {
@@ -200,18 +253,13 @@ function editTask(getMajorTasks) {
         url: "/Home/EditTask",
         data: JSON.stringify(task),
         contentType: 'application/json',
-        beforeSend: function () {
-            $("#Loader").show();
-        },
-        complete: function () {
-            $("#Loader").hide();
-        }
+        beforeSend: showLoader(),
+        complete: hideLoader()
     }).done(function (data, textStatus, jqXHR) {
         console.log("Task Edited")
         getMajorTasks(displayMajorTasks)
     }).fail(function () {
         console.log("HTTP Status: " + jqXHR.status + "; Error Text: " + jqXHR.responseText)
-
     })
     disableCover()
 }
@@ -231,12 +279,8 @@ function addTask(getMajorTasks) {
         url: "/Home/AddTask",
         data: JSON.stringify(task),
         contentType: 'application/json',
-        beforeSend: function () {
-            $("#Loader").show();
-        },
-        complete: function () {
-            $("#Loader").hide();
-        }
+        beforeSend: showLoader(),
+        complete: hideLoader()
     }).done(function (data,textStatus, jqXHR) {
         console.log("Task Created")
         getMajorTasks(displayMajorTasks)
