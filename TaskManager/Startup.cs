@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManager.DAL.EF;
@@ -25,6 +26,7 @@ namespace TaskManager
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.AddDbContext<TaskDbContext>(options => options.UseSqlServer(_confString.GetConnectionString("DefaultConnection")));
             services.AddTransient<ITasks, TasksRepository>();
             services.AddMvc();
@@ -41,6 +43,17 @@ namespace TaskManager
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en"),
+                new CultureInfo("ru")
+            };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("ru"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            });
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseStatusCodePages();

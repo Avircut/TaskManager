@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,10 +28,12 @@ namespace TaskManager.Controllers
     }
     public class HomeController : Controller
     {
+        private readonly IStringLocalizer<HomeController> _localizer;
         private TaskDbContext _db;
         private readonly ITasks _tasks;
-        public HomeController(ITasks tasks, TaskDbContext db)
+        public HomeController(ITasks tasks, TaskDbContext db, IStringLocalizer<HomeController> localizer)
         {
+            _localizer = localizer;
             _tasks = tasks;
             _db = db;
         }
@@ -39,7 +42,34 @@ namespace TaskManager.Controllers
         public IEnumerable<Tasks> GetNotCompletedTasks() => _tasks.GetNotCompletedTasks();
         public IActionResult Index()
         {
-            ViewBag.Title = "Task Manager";
+            ViewData["Title"] = _localizer["App.Title"];
+            ViewData["Confirmation.No"] = _localizer["Confirmation.No"];
+            ViewData["Confirmation.Yes"] = _localizer["Confirmation.Yes"];
+            ViewData["Confirmation.Title"] = _localizer["Confirmation.Title"];
+            ViewData["Controls.Tip.Create"] = _localizer["Controls.Tip.Create"];
+            ViewData["Controls.Tip.Edit"] = _localizer["Controls.Tip.Edit"];
+            ViewData["Controls.Tip.Delete"] = _localizer["Controls.Tip.Delete"];
+            ViewData["Form.Button.Create"] = _localizer["Form.Button.Create"];
+            ViewData["Form.Description"] = _localizer["Form.Description"];
+            ViewData["Form.Description.Invalid"] = _localizer["Form.Description.Invalid"];
+            ViewData["Form.Description.Placeholder"] = _localizer["Form.Description.Placeholder"];
+            ViewData["Form.EndDate"] = _localizer["Form.EndDate"];
+            ViewData["Form.EndDate.Invalid"] = _localizer["Form.EndDate.Invalid"];
+            ViewData["Form.Executors"] = _localizer["Form.Executors"];
+            ViewData["Form.Executors.Invalid"] = _localizer["Form.Executors.Invalid"];
+            ViewData["Form.Executors.Placeholder"] = _localizer["Form.Executors.Placeholder"];
+            ViewData["Form.Header"] = _localizer["Form.Header"];
+            ViewData["Form.Name"] = _localizer["Form.Name"];
+            ViewData["Form.Name.Invalid"] = _localizer["Form.Name.Invalid"];
+            ViewData["Form.Name.Placeholder"] = _localizer["Form.Name.Placeholder"];
+            ViewData["Form.ParentID"] = _localizer["Form.ParentID"];
+            ViewData["Form.ParentID.Optional"] = _localizer["Form.ParentID.Optional"];
+            ViewData["Sidebar.Title"] = _localizer["Sidebar.Title"];
+            ViewData["TaskInfo.Description"] = _localizer["TaskInfo.Description"];
+            ViewData["TaskInfo.Executors"] = _localizer["TaskInfo.Executors"];
+            ViewData["TaskInfo.Status"] = _localizer["TaskInfo.Status"];
+            ViewData["TaskInfo.Time"] = _localizer["TaskInfo.Time"];
+            @ViewData["Form.Button.Edit"] = _localizer["Form.Button.Edit"];
             HomeIndexViewModel obj = new HomeIndexViewModel();
             obj.GetNotCompletedTasks = _tasks.GetNotCompletedTasks();
             return View(obj);
